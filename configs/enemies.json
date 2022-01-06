@@ -1,0 +1,44 @@
+{
+    "enemies": [
+        {
+            "key": "zombie",
+            "name": "Зомби",
+
+            "place_settings": {
+                "sprite": "...",
+                "radius_place": 2.0
+            },
+            "skills": {
+                "health": 20.0,
+                "speed": 3.0
+            }
+        },
+        {
+            "key": "fast_zombie",
+            "name": "Быстрый зомби",
+
+            "place_settings": {
+                "sprite": "...",
+                "radius_place": 1.0
+            },
+            "skills": {
+                "health": 10.0,
+                "speed": 10.0
+            }
+        },
+        {
+            "key": "freeze_zombie",
+            "name": "Замораживающий зомби",
+
+            "place_settings": {
+                "sprite": "...",
+                "radius_place": 3.0
+            },
+            "skills": {
+                "health": 40.0,
+                "speed": 3.0,
+                "freeze_radius": 10.0 
+            }
+        }
+    ]
+}
