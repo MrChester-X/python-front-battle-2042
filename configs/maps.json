@@ -1,6 +1,7 @@
 {
     "maps": [
         {
+            "key": "forest",
             "name": "The Forest",
             "description": "Страшный лес, негативный",
 
