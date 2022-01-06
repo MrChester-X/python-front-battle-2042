@@ -1,0 +1,74 @@
+{
+    "maps": [
+        {
+            "key": "forest",
+            "name": "The Forest",
+            "description": "Страшный лес, негативный",
+
+            "game_settings": {
+                "sprite": "...",
+                "difficulty": "1"
+            },
+            "enemy_line": {
+                "line_radius": 2.0,
+                "line_points": [
+                    [0.0, 0.0],
+                    [1.0, 1.0],
+                    [1.0, 3.0],
+                    [3.0, 3.0],
+                    [3.0, 5.0]
+                ]
+            },
+            "difficulties": {
+                "easy": {
+                    "prize": 100,
+                    "waves": [
+                        {
+                            "zombie": 2
+                        },
+                        {
+                            "zombie": 4
+                        },
+                        {
+                            "zombie": 6,
+                            "fast_zombie": 1
+                        }
+                    ]
+                },
+                "normal": {
+                    "prize": 200,
+                    "waves": [
+                        {
+                            "zombie": 3
+                        },
+                        {
+                            "zombie": 5,
+                            "fast_zombie": 1
+                        },
+                        {
+                            "zombie": 8,
+                            "fast_zombie": 2
+                        }
+                    ]
+                },
+                "hard": {
+                    "prize": 300,
+                    "waves": [
+                        {
+                            "zombie": 4
+                        },
+                        {
+                            "zombie": 7,
+                            "fast_zombie": 2
+                        },
+                        {
+                            "zombie": 10,
+                            "fast_zombie": 3,
+                            "freeze_zombie": 1
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
