@@ -5,7 +5,7 @@
             "name": "Зомби",
 
             "place_settings": {
-                "sprite": "...",
+                "sprite": "enemy_placeholder.png",
                 "radius_place": 2.0
             },
             "skills": {
