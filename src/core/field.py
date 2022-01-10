@@ -1,11 +1,11 @@
 import pygame
 import sys
-from src.config.json_controller import FileJSON
-from pathlib import Path
 
 
-class Grid:
-    def __init__(self, screen_size, directories, difficulty, lvl_key=None):
+class Grid(pygame.sprite.Group):
+    def __init__(self, screen_size, directories, lvl_settings=None, *sprites):
+        super().__init__(*sprites)
+
         self.HOME_DIR = directories[0]
         self.CONFIG_DIR = directories[1]
         self.width = screen_size[0]
@@ -19,22 +19,12 @@ class Grid:
         self.grid = [[0] * (self.width // self.TILE_SIZE) for _ in
                      range(self.height // self.TILE_SIZE)]
 
-        try:
-            self.json_controller = FileJSON(Path.joinpath(self.CONFIG_DIR, 'maps.json'))
-            settings = \
-                list(filter(lambda x: x['key'] == lvl_key,
-                            self.json_controller.get_json()['maps']))[0]
+        self.description = lvl_settings['description']
+        self.title = lvl_settings['name']
 
-            self.path_generator(settings['enemy_line']['line_points'])
+        self.finish = lvl_settings['enemy_line']['line_points'][-1]
 
-            self.description = settings['description']
-            self.title = settings['name']
-
-            self.enemies = []
-
-        except FileNotFoundError:
-            print('Файла конфигурации не существует')
-            sys.exit()
+        self.path_generator(lvl_settings['enemy_line']['line_points'])
 
     def path_generator(self, path_points):
         path_points = [[int(i[0]), int(i[1])] for i in path_points]
@@ -42,24 +32,35 @@ class Grid:
         # расставляя тайлы дороги по пути, потом также с y точки
         for point in range(len(path_points) - 1):
             while path_points[point][0] < path_points[point + 1][0]:
-                self.set_tile(1, (path_points[point][0], path_points[point][1]))
+                self.add_tile(1, (path_points[point][0], path_points[point][1]))
                 path_points[point][0] += 1
             while path_points[point][1] < path_points[point + 1][1]:
-                self.set_tile(1, (path_points[point][0], path_points[point][1]))
+                self.add_tile(1, (path_points[point][0], path_points[point][1]))
                 path_points[point][1] += 1
 
-    def set_tile(self, tile, coords):
-        self.grid[coords[0]][coords[1]] = tile
-
     def update(self):
-        pass
+        for enemy in self.sprites():
+            grid_pos = (enemy.rect.x // self.TILE_SIZE, enemy.rect.y // self.TILE_SIZE)
+            if grid_pos != (int(self.finish[1]) - 1, int(self.finish[0])):
+                if self.grid[grid_pos[0] + 1] and self.grid[grid_pos[1] + 1]:
+                    if self.grid[grid_pos[1]][grid_pos[0] + 1] == 1:
+                        enemy.move_right()
+                        # print('right')
+                    elif self.grid[grid_pos[1] + 1][grid_pos[0]] == 1:
+                        enemy.move_down()
+                        # print('down')
+                    elif self.grid[grid_pos[1]][grid_pos[0] - 1] == 1:
+                        enemy.move_left()
+                        # print('left')
+                    elif self.grid[grid_pos[1] - 1][grid_pos[0]] == 1:
+                        enemy.move_up()
+                        # print('up')
 
     def render(self, screen):
         screen.fill((0, 0, 0))
         for col in range(self.width // self.TILE_SIZE):
             for row in range(self.height // self.TILE_SIZE):
                 value = self.grid[row][col]
-                print(value)
                 pygame.draw.rect(screen, pygame.Color('white'),
                                  ((col * self.TILE_SIZE, row * self.TILE_SIZE),
                                   (self.TILE_SIZE, self.TILE_SIZE)), 1)
@@ -67,3 +68,12 @@ class Grid:
                     pygame.draw.rect(screen, pygame.Color('cyan'),
                                      ((col * self.TILE_SIZE + 1, row * self.TILE_SIZE + 1),
                                       (self.TILE_SIZE - 2, self.TILE_SIZE - 2)))
+
+    def add_enemy(self, *enemy):
+        self.add(*enemy)
+
+    def add_tile(self, tile, pos):
+        self.grid[pos[0]][pos[1]] = tile
+
+    def add_unit(self, unit, pos):
+        pass
