@@ -1,4 +1,4 @@
-from globals.main_globals import coins, enemy_types, shop
+from src.core.globals.main_globals import coins, enemy_types, shop
 
 
 class Shop:

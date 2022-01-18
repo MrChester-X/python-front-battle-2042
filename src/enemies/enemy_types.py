@@ -1,5 +1,5 @@
 import sys
-from globals.main_globals import json_enemies, enemy_types
+from src.core.globals.main_globals import json_enemies, enemy_types
 
 
 class EnemyType:
@@ -31,7 +31,7 @@ class EnemyType:
         skills = data["skills"]
 
         self.health = skills.get("health")
-        self.speed = skills.get("speed")
+        self.speed = int(skills.get("speed")) / 2
 
 
 def load_all_enemy_types():
@@ -41,6 +41,7 @@ def load_all_enemy_types():
     for section in data:
         key = section["key"]
         enemy_types[key] = EnemyType(key)
-        print(f"{enemy_types[key].key}: {enemy_types[key].name} (Здоровье: {enemy_types[key].health})")
+        print(
+            f"{enemy_types[key].key}: {enemy_types[key].name} (Здоровье: {enemy_types[key].health})")
 
     print("\033[92mВсе противники успешно загружены!\033[0m\n")
