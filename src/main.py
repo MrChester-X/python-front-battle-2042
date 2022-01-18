@@ -41,15 +41,18 @@ class Main:
         self.grid = Grid(settings)
         print(settings)
 
-        load_all_unit_types()
-        load_all_enemy_types()
-        load_shop()
+        self.load()
 
         zombie1 = Enemy(list(settings['difficulties']['easy']['waves'][0].keys())[0], (0, 0))
 
         self.grid.add(zombie1)
 
         self.main_menu()
+
+    def load(self):
+        load_all_unit_types()
+        load_all_enemy_types()
+        load_shop()
 
     def main_menu(self):
         pygame.draw.rect(self.screen, pygame.Color(0, 0, 0),
@@ -68,6 +71,12 @@ class Main:
 
             self.clock.tick(FPS)
 
+    def level_selector(self):
+        pass
+
+    def pause_menu(self):
+        pass
+
     def run(self):
         self.screen.fill((0, 0, 0))
         while self.running:
@@ -75,7 +84,7 @@ class Main:
                 if event.type == pygame.QUIT:
                     self.running = False
 
-            self.grid.render(self.screen)
+            # self.grid.render(self.screen)
 
             self.grid.draw(self.screen)
             self.grid.update()

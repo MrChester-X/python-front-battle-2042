@@ -1,4 +1,4 @@
-from src.core.globals.main_globals import HOME_DIR, TILE_SIZE, SCREEN_SIZE, GRID_SIZE
+from src.core.globals.main_globals import TILE_SIZE, SCREEN_SIZE, GRID_SIZE, sprites_loader
 import pygame
 
 
@@ -9,16 +9,18 @@ class Grid(pygame.sprite.Group):
         self.width = SCREEN_SIZE[0]
         self.height = SCREEN_SIZE[1]
 
-        # тут надо будет либо в конфиг добавить, либо какой-то единый стандарт сделать, еще думаю
-
-        # а что с размерами сетки для тайлов делаем? пока я сколько влезет ставлю, надо подумать
-
         self.grid = [[0] * GRID_SIZE[0] for _ in range(GRID_SIZE[1])]
 
         self.description = lvl_settings['description']
         self.title = lvl_settings['name']
 
         self.finish = lvl_settings['enemy_line']['line_points'][-1]
+
+        self.map_sprites = lvl_settings['game_settings']['sprite']
+
+        for row in range(GRID_SIZE[1]):
+            for col in range(GRID_SIZE[0]):
+                self.add_tile('terrain', (col, row))
 
         self.path_generator(lvl_settings['enemy_line']['line_points'])
 
@@ -28,48 +30,50 @@ class Grid(pygame.sprite.Group):
         # расставляя тайлы дороги по пути, потом также с y точки
         for point in range(len(path_points) - 1):
             while path_points[point][0] < path_points[point + 1][0]:
-                self.add_tile(1, (path_points[point][0], path_points[point][1]))
+                self.add_tile('road', (path_points[point][0], path_points[point][1]))
                 path_points[point][0] += 1
             while path_points[point][1] < path_points[point + 1][1]:
-                self.add_tile(1, (path_points[point][0], path_points[point][1]))
+                self.add_tile('road', (path_points[point][0], path_points[point][1]))
                 path_points[point][1] += 1
 
     def update(self):
         for enemy in self.sprites():
-            grid_pos = (enemy.rect.x // TILE_SIZE, enemy.rect.y // TILE_SIZE)
-            if grid_pos != (int(self.finish[1]) - 1, int(self.finish[0])):
-                if self.grid[grid_pos[0] + 1] and self.grid[grid_pos[1] + 1]:
-                    if self.grid[grid_pos[1]][grid_pos[0] + 1] == 1:
-                        enemy.move_right()
-                        # print('right')
-                    elif self.grid[grid_pos[1] + 1][grid_pos[0]] == 1:
-                        enemy.move_down()
-                        # print('down')
-                    elif self.grid[grid_pos[1]][grid_pos[0] - 1] == 1:
-                        enemy.move_left()
-                        # print('left')
-                    elif self.grid[grid_pos[1] - 1][grid_pos[0]] == 1:
-                        enemy.move_up()
-                        # print('up')
-
-    def render(self, screen):
-        screen.fill((0, 0, 0))
-        for col in range(GRID_SIZE[0]):
-            for row in range(GRID_SIZE[1]):
-                value = self.grid[row][col]
-                pygame.draw.rect(screen, pygame.Color('white'),
-                                 ((col * TILE_SIZE, row * TILE_SIZE),
-                                  (TILE_SIZE, TILE_SIZE)), 1)
-                if value == 1:
-                    pygame.draw.rect(screen, pygame.Color('cyan'),
-                                     ((col * TILE_SIZE + 1, row * TILE_SIZE + 1),
-                                      (TILE_SIZE - 2, TILE_SIZE - 2)))
+            if enemy.__class__ != Tile:
+                grid_pos = (enemy.rect.x // TILE_SIZE, enemy.rect.y // TILE_SIZE)
+                print(grid_pos == (int(self.finish[1]), int(self.finish[0]) - 1))
+                if grid_pos != (int(self.finish[1]), int(self.finish[0]) - 1):
+                    if self.grid[grid_pos[0] + 1] and self.grid[grid_pos[1] + 1]:
+                        if self.grid[grid_pos[1]][grid_pos[0] + 1].type == 'road':
+                            enemy.move_right()
+                        elif self.grid[grid_pos[1] + 1][grid_pos[0]].type == 'road':
+                            enemy.move_down()
+                        elif self.grid[grid_pos[1]][grid_pos[0] - 1].type == 'road':
+                            enemy.move_left()
+                        elif self.grid[grid_pos[1] - 1][grid_pos[0]].type == 'road':
+                            enemy.move_up()
 
     def add_enemy(self, *enemy):
         self.add(*enemy)
 
     def add_tile(self, tile, pos):
-        self.grid[pos[0]][pos[1]] = tile
+        tile_sprite = self.grid[pos[1]][pos[0]] = Tile(tile, pos, self.map_sprites)
+        self.add(tile_sprite)
 
     def add_unit(self, unit, pos):
         pass
+
+
+class Tile(pygame.sprite.Sprite):
+    def __init__(self, type, pos, sprites):
+        super().__init__()
+
+        self.type = type
+        self.pos = (pos[0] * TILE_SIZE, pos[1] * TILE_SIZE)
+
+        self.load_sprite(sprites)
+
+    def load_sprite(self, sprites):
+        self.image = sprites_loader.load_image(sprites[self.type])
+        self.rect = self.image.get_rect()
+        self.rect.x = self.pos[0]
+        self.rect.y = self.pos[1]
