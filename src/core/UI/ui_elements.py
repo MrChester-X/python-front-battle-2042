@@ -1,8 +1,10 @@
+from src.core.globals.main_globals import MAIN_FONT
 import pygame
 
 
 class Text:
-    def __init__(self, screen, color, font_size, font=None):
+    def __init__(self, screen, color, font_size, font=MAIN_FONT):
+        pygame.font.init()
         self.screen = screen
         self.font = pygame.font.Font(font, font_size)
         self.color = color
@@ -20,9 +22,9 @@ class Button:
 
         self.font_size = font_size
 
-        self.text_color = pygame.Color(0, 0, 0)
-        self.unvisited_color = pygame.Color(255, 0, 0)
-        self.visited_color = pygame.Color(0, 255, 0)
+        self.text_color = pygame.Color(255, 255, 255)
+        self.unvisited_color = pygame.Color(0, 0, 0)
+        self.visited_color = pygame.Color(255, 255, 255)
 
         self.message = text
 
@@ -33,7 +35,7 @@ class Button:
         pressed = pygame.mouse.get_pressed()
 
         if x <= mouse_pos[0] <= x + self.width and y <= mouse_pos[1] <= y + self.height:
-            pygame.draw.rect(self.screen, self.visited_color, ((x, y), (self.width, self.height)))
+            pygame.draw.rect(self.screen, self.visited_color, ((x, y), (self.width, self.height)), 1)
             if pressed[0]:
                 if action:
                     action()
