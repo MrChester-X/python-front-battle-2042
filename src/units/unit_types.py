@@ -1,8 +1,8 @@
 import sys
-from globals.main_globals import json_units, units
+from globals.main_globals import json_units, unit_types
 
 
-class Unit:
+class UnitType:
     def __init__(self, key):
         self.key = key
         self.load_json()
@@ -41,13 +41,13 @@ class Unit:
         self.reload = skills.get("reload")
 
 
-def load_all_units():
+def load_all_unit_types():
     print("Загрузка юнитов...")
     data = json_units.get_json()["units"]
 
     for section in data:
         key = section["key"]
-        units[key] = Unit(key)
-        print(f"{units[key].key}: {units[key].name} (Цена: {units[key].cost}$)")
+        unit_types[key] = UnitType(key)
+        print(f"{unit_types[key].key}: {unit_types[key].name} (Цена: {unit_types[key].cost}$)")
 
-    print("\033[92mВсе юниты успешно загружены!\n")
+    print("\033[92mВсе юниты успешно загружены!\033[0m\n")
