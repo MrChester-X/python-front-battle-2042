@@ -1,10 +1,12 @@
 import pygame
 from core.field import Grid
 from pathlib import Path
-from src.enemies import enemies_lib
-from src.config.json_controller import FileJSON
+from enemies import enemies_lib
+from config.json_controller import FileJSON
 import sys
-
+from units.unit_types import load_all_unit_types
+from enemies.enemy_types import load_all_enemy_types
+from shop.shop import load_shop
 
 class Main:
     def __init__(self):
@@ -38,6 +40,10 @@ class Main:
             sys.exit()
 
         self.grid = Grid(self.size, (self.HOME_DIR, self.CONFIG_DIR), self.settings)
+
+        load_all_unit_types()
+        load_all_enemy_types()
+        load_shop()
 
         zombie1 = enemies_lib.Zombie()
 

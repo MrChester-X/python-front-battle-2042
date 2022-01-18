@@ -1,6 +1,6 @@
 import pygame.sprite
-from src.config.image_controller import ImageLoader
-from src.config.json_controller import FileJSON
+from config.image_controller import ImageLoader
+from config.json_controller import FileJSON
 from pathlib import Path
 import sys
 import pprint
