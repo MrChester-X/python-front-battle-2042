@@ -4,7 +4,9 @@ from pathlib import Path
 from enemies import enemies_lib
 from config.json_controller import FileJSON
 import sys
-from units.unit_controller import load_all_units
+from units.unit_types import load_all_unit_types
+from enemies.enemy_types import load_all_enemy_types
+from shop.shop import load_shop
 
 class Main:
     def __init__(self):
@@ -39,6 +41,10 @@ class Main:
 
         self.grid = Grid(self.size, (self.HOME_DIR, self.CONFIG_DIR), self.settings)
 
+        load_all_unit_types()
+        load_all_enemy_types()
+        load_shop()
+
         zombie1 = enemies_lib.Zombie()
 
         self.grid.add(zombie1)
@@ -64,4 +70,3 @@ class Main:
 if __name__ == '__main__':
     app = Main()
     app.run()
-    load_all_units()
