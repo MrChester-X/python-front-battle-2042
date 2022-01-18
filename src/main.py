@@ -1,28 +1,22 @@
+from src.core.field import Grid
+from src.units.unit_types import load_all_unit_types
+from src.enemies.enemy_types import load_all_enemy_types
+from src.enemies.enemy import Enemy
+from src.core.shop.shop import load_shop
+from src.core.globals.main_globals import HOME_DIR, enemy_types, json_maps, FPS, SCREEN_SIZE
 import pygame
-from core.field import Grid
-from pathlib import Path
-from enemies import enemies_lib
-from config.json_controller import FileJSON
 import sys
-from units.unit_types import load_all_unit_types
-from enemies.enemy_types import load_all_enemy_types
-from shop.shop import load_shop
+
 
 class Main:
     def __init__(self):
         pygame.init()
 
-        self.size = self.width, self.height = 1000, 1000
-        self.screen = pygame.display.set_mode(self.size)
-
-        self.HOME_DIR = Path(__file__).resolve().parent.parent
-        self.CONFIG_DIR = Path.joinpath(self.HOME_DIR, 'configs')
+        self.screen = pygame.display.set_mode(SCREEN_SIZE)
 
         self.clock = pygame.time.Clock()
         self.running = True
         self.pause = True
-
-        self.FPS = 60
 
         # ключ уровня и сложность потом будем получать из другого класса-меню
 
@@ -30,22 +24,27 @@ class Main:
 
         self.difficulty = 'easy'
 
-        try:
-            self.json_controller = FileJSON(Path.joinpath(self.CONFIG_DIR, 'maps.json'))
-            self.settings = \
-                list(filter(lambda x: x['key'] == self.lvl,
-                            self.json_controller.get_json()['maps']))[0]
-        except FileNotFoundError:
-            print('Файла конфигурации не существует')
+        settings = json_maps.get_json()['maps']
+
+        find = False
+        for section in settings:
+            if section["key"] == self.lvl:
+                settings = section
+                find = True
+                break
+
+        if not find:
+            print(f"Карты не существует...")
             sys.exit()
 
-        self.grid = Grid(self.size, (self.HOME_DIR, self.CONFIG_DIR), self.settings)
+        self.grid = Grid(settings)
+        print(settings)
 
         load_all_unit_types()
         load_all_enemy_types()
         load_shop()
 
-        zombie1 = enemies_lib.Zombie()
+        zombie1 = Enemy(list(settings['difficulties']['easy']['waves'][0].keys())[0], (0, 0))
 
         self.grid.add(zombie1)
 
@@ -62,7 +61,7 @@ class Main:
 
             pygame.display.flip()
 
-            self.clock.tick(self.FPS)
+            self.clock.tick(FPS)
 
         pygame.quit()
 

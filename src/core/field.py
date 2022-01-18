@@ -1,23 +1,19 @@
+from src.core.globals.main_globals import HOME_DIR, TILE_SIZE, SCREEN_SIZE, GRID_SIZE
 import pygame
-import sys
 
 
 class Grid(pygame.sprite.Group):
-    def __init__(self, screen_size, directories, lvl_settings=None, *sprites):
+    def __init__(self, lvl_settings=None, *sprites):
         super().__init__(*sprites)
 
-        self.HOME_DIR = directories[0]
-        self.CONFIG_DIR = directories[1]
-        self.width = screen_size[0]
-        self.height = screen_size[1]
+        self.width = SCREEN_SIZE[0]
+        self.height = SCREEN_SIZE[1]
 
         # тут надо будет либо в конфиг добавить, либо какой-то единый стандарт сделать, еще думаю
-        self.TILE_SIZE = 100
 
         # а что с размерами сетки для тайлов делаем? пока я сколько влезет ставлю, надо подумать
 
-        self.grid = [[0] * (self.width // self.TILE_SIZE) for _ in
-                     range(self.height // self.TILE_SIZE)]
+        self.grid = [[0] * GRID_SIZE[0] for _ in range(GRID_SIZE[1])]
 
         self.description = lvl_settings['description']
         self.title = lvl_settings['name']
@@ -40,7 +36,7 @@ class Grid(pygame.sprite.Group):
 
     def update(self):
         for enemy in self.sprites():
-            grid_pos = (enemy.rect.x // self.TILE_SIZE, enemy.rect.y // self.TILE_SIZE)
+            grid_pos = (enemy.rect.x // TILE_SIZE, enemy.rect.y // TILE_SIZE)
             if grid_pos != (int(self.finish[1]) - 1, int(self.finish[0])):
                 if self.grid[grid_pos[0] + 1] and self.grid[grid_pos[1] + 1]:
                     if self.grid[grid_pos[1]][grid_pos[0] + 1] == 1:
@@ -58,16 +54,16 @@ class Grid(pygame.sprite.Group):
 
     def render(self, screen):
         screen.fill((0, 0, 0))
-        for col in range(self.width // self.TILE_SIZE):
-            for row in range(self.height // self.TILE_SIZE):
+        for col in range(GRID_SIZE[0]):
+            for row in range(GRID_SIZE[1]):
                 value = self.grid[row][col]
                 pygame.draw.rect(screen, pygame.Color('white'),
-                                 ((col * self.TILE_SIZE, row * self.TILE_SIZE),
-                                  (self.TILE_SIZE, self.TILE_SIZE)), 1)
+                                 ((col * TILE_SIZE, row * TILE_SIZE),
+                                  (TILE_SIZE, TILE_SIZE)), 1)
                 if value == 1:
                     pygame.draw.rect(screen, pygame.Color('cyan'),
-                                     ((col * self.TILE_SIZE + 1, row * self.TILE_SIZE + 1),
-                                      (self.TILE_SIZE - 2, self.TILE_SIZE - 2)))
+                                     ((col * TILE_SIZE + 1, row * TILE_SIZE + 1),
+                                      (TILE_SIZE - 2, TILE_SIZE - 2)))
 
     def add_enemy(self, *enemy):
         self.add(*enemy)

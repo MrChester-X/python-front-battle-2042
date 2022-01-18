@@ -1,5 +1,5 @@
 import sys
-from globals.main_globals import json_units, unit_types
+from src.core.globals.main_globals import json_units, unit_types
 
 
 class UnitType:

@@ -1,0 +1,20 @@
+from src.config.json_controller import FileJSON
+from src.config.image_controller import ImageLoader
+from pathlib import Path
+
+SCREEN_SIZE = width, height = 1200, 800
+GRID_SIZE = 10, 6
+FPS = 60
+TILE_SIZE = 100
+HOME_DIR = Path(__file__).resolve().parent.parent.parent.parent
+
+json_units = FileJSON(Path.joinpath(HOME_DIR, "configs/units.json"))
+json_enemies = FileJSON(Path.joinpath(HOME_DIR, "configs/enemies.json"))
+json_maps = FileJSON(Path.joinpath(HOME_DIR, "configs/maps.json"))
+sprites_loader = ImageLoader()
+
+unit_types = {}
+enemy_types = {}
+
+coins = 0
+shop = None
