@@ -3,7 +3,7 @@ import pygame
 
 
 class Grid(pygame.sprite.Group):
-    def __init__(self, lvl_settings=None, *sprites):
+    def __init__(self, difficulty, lvl_settings=None, *sprites):
         super().__init__(*sprites)
 
         self.width = SCREEN_SIZE[0]
@@ -15,6 +15,11 @@ class Grid(pygame.sprite.Group):
         self.title = lvl_settings['name']
 
         self.finish = lvl_settings['enemy_line']['line_points'][-2]
+
+        base = (int(lvl_settings['enemy_line']['line_points'][-1][0]),
+                int(lvl_settings['enemy_line']['line_points'][-1][1]))
+
+        self.base = self.grid[base[0]][base[1]] = Base()
 
         self.map_sprites = lvl_settings['game_settings']['sprite']
 
@@ -50,6 +55,8 @@ class Grid(pygame.sprite.Group):
                             enemy.move_left()
                         elif self.grid[grid_pos[1] - 1][grid_pos[0]].type == 'road':
                             enemy.move_up()
+                else:
+                    enemy.attack(self.base)
 
     def add_enemy(self, *enemy):
         self.add(*enemy)
@@ -60,6 +67,9 @@ class Grid(pygame.sprite.Group):
 
     def add_unit(self, unit, pos):
         pass
+
+    # def regenerate(self):
+    #     super().__init__()
 
 
 class Tile(pygame.sprite.Sprite):
@@ -76,3 +86,8 @@ class Tile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = self.pos[0]
         self.rect.y = self.pos[1]
+
+
+class Base:
+    def __init__(self):
+        self.health = 100

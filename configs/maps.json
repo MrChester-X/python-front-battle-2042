@@ -7,8 +7,8 @@
 
             "game_settings": {
                 "sprite": {
-                    "road": "road_placeholder.png",
-                    "terrain": "tile_placeholder.png"
+                    "road": "road_tile_1.png",
+                    "terrain": "grass_tile_1.png"
                 },
                 "difficulty": "1"
             },

@@ -36,13 +36,15 @@ class Button:
 
         if active:
             if x <= mouse_pos[0] <= x + self.width and y <= mouse_pos[1] <= y + self.height:
-                pygame.draw.rect(self.screen, self.visited_color, ((x, y), (self.width, self.height)), 1)
+                pygame.draw.rect(self.screen, self.visited_color,
+                                 ((x, y), (self.width, self.height)), 1)
                 if pressed[0]:
                     if action:
                         action()
-
+                    return True
             else:
-                pygame.draw.rect(self.screen, self.unvisited_color, ((x, y), (self.width, self.height)))
+                pygame.draw.rect(self.screen, self.unvisited_color,
+                                 ((x, y), (self.width, self.height)))
         else:
             pygame.draw.rect(self.screen, self.unvisited_color, ((x, y), (self.width, self.height)))
 
