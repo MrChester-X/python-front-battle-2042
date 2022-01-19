@@ -1,8 +1,9 @@
 from src.core.field import Grid
 from src.units.unit_types import load_all_unit_types
 from src.enemies.enemy_types import load_all_enemy_types
+from src.enemies.enemy import Enemy
 from src.core.shop.shop import load_shop
-from src.core.globals.main_globals import json_maps, FPS, SCREEN_SIZE, sprites_loader
+from src.core.globals.main_globals import json_maps, FPS, SCREEN_SIZE, sprites_loader, coins
 from src.core.UI.ui_elements import Button, Text
 import pygame
 import sys
@@ -23,6 +24,8 @@ class Main:
         self.difficulty = None
 
         self.settings = json_maps.get_json()['maps']
+
+        self.waves = []
 
         self.load()
 
@@ -113,18 +116,33 @@ class Main:
                 res = 'normal'
             elif hard:
                 res = 'hard'
+
             if easy or normal or hard:
-                self.grid = Grid(res, self.maps[self.lvl_key])
+                self.grid = Grid(self.maps[self.lvl_key])
                 self.running = True
-                self.run_level()
+                self.run_level(res)
                 menu = False
 
             pygame.display.flip()
 
             self.clock.tick(FPS)
 
-    def run_level(self):
+    def generate_waves(self, difficulty, lvl):
+        settings = lvl['difficulties'][difficulty]
+        self.wave_reward = settings['prize']
+        for wave in settings['waves']:
+            enemies = []
+            for enemy_type in wave:
+                for enemy in range(wave[enemy_type]):
+                    enemies.append(Enemy(enemy_type, (0, 0)))
+            self.waves.append(enemies)
+
+        self.ADDENEMY = pygame.USEREVENT + 1
+        pygame.time.set_timer(self.ADDENEMY, 1000)
+
+    def run_level(self, difficulty):
         self.screen.fill((0, 0, 0))
+        self.generate_waves(difficulty, self.maps[self.lvl_key])
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -132,6 +150,15 @@ class Main:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         self.pause = not self.pause
+                if event.type == self.ADDENEMY:
+                    if len(self.waves) > 0:
+                        if len(self.waves[0]) > 1:
+                            self.grid.add(self.waves[0].pop(0))
+                        elif len(self.waves[0]) == 1:
+                            self.grid.add(self.waves[0].pop(0))
+                            del self.waves[0]
+                    else:
+                        self.running = False
 
             if not self.pause:
                 self.grid.draw(self.screen)
@@ -145,6 +172,8 @@ class Main:
             pygame.display.flip()
 
             self.clock.tick(FPS)
+
+        pygame.quit()
 
 
 if __name__ == '__main__':

@@ -3,7 +3,7 @@ import pygame
 
 
 class Grid(pygame.sprite.Group):
-    def __init__(self, difficulty, lvl_settings=None, *sprites):
+    def __init__(self, lvl_settings=None, *sprites):
         super().__init__(*sprites)
 
         self.width = SCREEN_SIZE[0]
