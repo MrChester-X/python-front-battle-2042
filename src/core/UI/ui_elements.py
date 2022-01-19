@@ -3,11 +3,11 @@ import pygame
 
 
 class Text:
-    def __init__(self, screen, color, font_size, font=MAIN_FONT):
+    def __init__(self, screen, color, font_size=50, font=MAIN_FONT):
         pygame.font.init()
         self.screen = screen
         self.font = pygame.font.Font(font, font_size)
-        self.color = color
+        self.color = pygame.Color(color[0], color[1], color[2])
 
     def draw(self, text, pos):
         res = self.font.render(text, False, self.color)
@@ -30,15 +30,19 @@ class Button:
 
         self.text = Text(screen, self.text_color, font_size)
 
-    def draw(self, x, y, action=None):
+    def draw(self, x, y, action=None, active=True):
         mouse_pos = pygame.mouse.get_pos()
         pressed = pygame.mouse.get_pressed()
 
-        if x <= mouse_pos[0] <= x + self.width and y <= mouse_pos[1] <= y + self.height:
-            pygame.draw.rect(self.screen, self.visited_color, ((x, y), (self.width, self.height)), 1)
-            if pressed[0]:
-                if action:
-                    action()
+        if active:
+            if x <= mouse_pos[0] <= x + self.width and y <= mouse_pos[1] <= y + self.height:
+                pygame.draw.rect(self.screen, self.visited_color, ((x, y), (self.width, self.height)), 1)
+                if pressed[0]:
+                    if action:
+                        action()
+
+            else:
+                pygame.draw.rect(self.screen, self.unvisited_color, ((x, y), (self.width, self.height)))
         else:
             pygame.draw.rect(self.screen, self.unvisited_color, ((x, y), (self.width, self.height)))
 

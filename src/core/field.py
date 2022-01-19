@@ -14,7 +14,7 @@ class Grid(pygame.sprite.Group):
         self.description = lvl_settings['description']
         self.title = lvl_settings['name']
 
-        self.finish = lvl_settings['enemy_line']['line_points'][-1]
+        self.finish = lvl_settings['enemy_line']['line_points'][-2]
 
         self.map_sprites = lvl_settings['game_settings']['sprite']
 
@@ -40,8 +40,7 @@ class Grid(pygame.sprite.Group):
         for enemy in self.sprites():
             if enemy.__class__ != Tile:
                 grid_pos = (enemy.rect.x // TILE_SIZE, enemy.rect.y // TILE_SIZE)
-                print(grid_pos == (int(self.finish[1]), int(self.finish[0]) - 1))
-                if grid_pos != (int(self.finish[1]), int(self.finish[0]) - 1):
+                if grid_pos != (int(self.finish[1]), int(self.finish[0])):
                     if self.grid[grid_pos[0] + 1] and self.grid[grid_pos[1] + 1]:
                         if self.grid[grid_pos[1]][grid_pos[0] + 1].type == 'road':
                             enemy.move_right()

@@ -17,7 +17,7 @@ class Main:
 
         self.clock = pygame.time.Clock()
         self.running = True
-        self.pause = True
+        self.pause = False
 
         # ключ уровня и сложность потом будем получать из другого класса-меню
 
@@ -47,8 +47,6 @@ class Main:
 
         self.grid.add(zombie1)
 
-        self.main_menu()
-
     def load(self):
         load_all_unit_types()
         load_all_enemy_types()
@@ -57,25 +55,23 @@ class Main:
     def main_menu(self):
         pygame.draw.rect(self.screen, pygame.Color(0, 0, 0),
                          ((0, 0), (SCREEN_SIZE[0], SCREEN_SIZE[1])))
-        center_x = (SCREEN_SIZE[0] // 2) - 350 // 2
-        main_menu = True
+
+        btns_x = (SCREEN_SIZE[0] // 10)  # - 350 // 2
+        btns_y = (SCREEN_SIZE[1] // 2) - 100 // 2
         start_btn = Button(self.screen, (350, 100), 'Начать игру')
-        while main_menu:
+        exit_btn = Button(self.screen, (350, 100), 'Выйти')
+
+        while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
 
-            start_btn.draw(center_x, 200, self.run)
+            start_btn.draw(btns_x, btns_y - 50, self.run)
+            exit_btn.draw(btns_x, btns_y + 50, sys.exit)
 
             pygame.display.flip()
 
             self.clock.tick(FPS)
-
-    def level_selector(self):
-        pass
-
-    def pause_menu(self):
-        pass
 
     def run(self):
         self.screen.fill((0, 0, 0))
@@ -83,11 +79,13 @@ class Main:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        self.pause = not self.pause
 
-            # self.grid.render(self.screen)
-
-            self.grid.draw(self.screen)
-            self.grid.update()
+            if not self.pause:
+                self.grid.draw(self.screen)
+                self.grid.update()
 
             pygame.display.flip()
 
@@ -98,3 +96,4 @@ class Main:
 
 if __name__ == '__main__':
     app = Main()
+    app.main_menu()
