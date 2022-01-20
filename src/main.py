@@ -178,7 +178,6 @@ class Main:
         pygame.time.set_timer(self.SPAWN, SPAWNRATE)
         pygame.time.set_timer(self.COUNTDOWN, 0)
         if self.waves:
-            print(len(self.waves[0]) > 0)
             if len(self.waves[0]) > 0:
                 self.grid.add_enemy(self.waves[0].pop(0))
                 print('спавн')
@@ -199,8 +198,6 @@ class Main:
         self.generate_waves(difficulty, self.maps[self.lvl_key])
 
         pygame.time.set_timer(self.SPAWN, SPAWNRATE)
-
-        self.waves.clear()
 
         wave = 1
         counter = self.add_wave()
