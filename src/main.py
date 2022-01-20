@@ -19,7 +19,7 @@ class Main:
         self.running = False
         self.pause = False
 
-        global wave, coins
+        global coins
 
         self.maps = json_maps.get_json()['maps']
         self.lvl_key = None
@@ -165,16 +165,18 @@ class Main:
     def generate_waves(self, difficulty, lvl):
         settings = lvl['difficulties'][difficulty]
         self.wave_reward = settings['prize']
-        for wave in settings['waves']:
+        for waves in settings['waves']:
             enemies = []
-            for enemy_type in wave:
-                for enemy in range(wave[enemy_type]):
+            for enemy_type in waves:
+                for enemy in range(waves[enemy_type]):
                     enemies.append(Enemy(enemy_type, (0, 0)))
             self.waves.append(enemies)
 
         pygame.time.set_timer(self.SPAWN, 10)
 
     def add_wave(self):
+        global coins
+
         pygame.time.set_timer(self.SPAWN, SPAWNRATE)
         pygame.time.set_timer(self.COUNTDOWN, 0)
         if self.waves:
