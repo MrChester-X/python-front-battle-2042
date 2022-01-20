@@ -10,6 +10,7 @@ FPS = 60
 TILE_SIZE = 100
 HOME_DIR = Path(__file__).resolve().parent.parent.parent.parent
 MAIN_FONT = Path().joinpath(HOME_DIR, 'src', 'core', 'UI', 'fonts', 'JETBRAINS.ttf')
+SPAWNRATE = 2000
 
 json_units = FileJSON(Path.joinpath(HOME_DIR, "configs/units.json"))
 json_enemies = FileJSON(Path.joinpath(HOME_DIR, "configs/enemies.json"))

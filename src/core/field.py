@@ -79,9 +79,6 @@ class Grid(pygame.sprite.Group):
     def add_unit(self, unit, pos):
         pass
 
-    # def regenerate(self):
-    #     super().__init__()
-
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self, type, pos, sprites):
