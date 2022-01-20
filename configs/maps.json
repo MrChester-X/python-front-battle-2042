@@ -6,7 +6,10 @@
             "description": "Страшный лес, негативный",
 
             "game_settings": {
-                "sprite": "...",
+                "sprite": {
+                    "road": "road_tile_1.png",
+                    "terrain": "grass_tile_1.png"
+                },
                 "difficulty": "1"
             },
             "enemy_line": {

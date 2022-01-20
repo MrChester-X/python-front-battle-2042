@@ -8,6 +8,8 @@ class Enemy(pygame.sprite.Sprite):
 
         self.type = type
 
+        self.dmg = 1
+
         self.load_health()
         self.load_sprite(pos)
 
@@ -34,3 +36,6 @@ class Enemy(pygame.sprite.Sprite):
 
     def move_down(self):
         self.rect.y += self.speed
+
+    def attack(self, target):
+        target.health -= self.dmg
