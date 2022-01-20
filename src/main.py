@@ -102,7 +102,7 @@ class Main:
                          ((0, 0), (SCREEN_SIZE[0], SCREEN_SIZE[1])))
 
         btns_x = (SCREEN_SIZE[0] // 2) - 400 // 2
-        btns_y = (SCREEN_SIZE[1] // 3) # - 100 // 2
+        btns_y = (SCREEN_SIZE[1] // 3)  # - 100 // 2
         heading_txt = Text(screen, (255, 255, 255))
         exit_btn = Button(screen, (400, 100), 'Выйти в меню')
 
