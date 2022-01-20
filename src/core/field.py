@@ -1,4 +1,6 @@
 from src.core.globals.main_globals import TILE_SIZE, SCREEN_SIZE, GRID_SIZE, sprites_loader
+from src.core.UI.ui_elements import Text
+from src.core.globals.main_globals import coins, screen as sc, wave
 import pygame
 
 
@@ -14,12 +16,12 @@ class Grid(pygame.sprite.Group):
         self.description = lvl_settings['description']
         self.title = lvl_settings['name']
 
-        self.finish = lvl_settings['enemy_line']['line_points'][-2]
+        self.finish = lvl_settings['enemy_line']['line_points'][-1]
 
         base = (int(lvl_settings['enemy_line']['line_points'][-1][0]),
                 int(lvl_settings['enemy_line']['line_points'][-1][1]))
 
-        self.base = self.grid[base[0]][base[1]] = Base()
+        self.base = self.grid[base[1]][base[0]] = Base()
 
         self.map_sprites = lvl_settings['game_settings']['sprite']
 
@@ -29,34 +31,43 @@ class Grid(pygame.sprite.Group):
 
         self.path_generator(lvl_settings['enemy_line']['line_points'])
 
+        self.wave_text = Text(sc, (255, 255, 255))
+        self.coin_text = Text(sc, (255, 255, 255))
+
     def path_generator(self, path_points):
         path_points = [[int(i[0]), int(i[1])] for i in path_points]
-        # проходимся сначала по x точки, пока значение не равно x следующей точки,
-        # расставляя тайлы дороги по пути, потом также с y точки
-        for point in range(len(path_points) - 1):
-            while path_points[point][0] < path_points[point + 1][0]:
-                self.add_tile('road', (path_points[point][0], path_points[point][1]))
-                path_points[point][0] += 1
-            while path_points[point][1] < path_points[point + 1][1]:
-                self.add_tile('road', (path_points[point][0], path_points[point][1]))
-                path_points[point][1] += 1
 
-    def update(self):
+        for point in path_points:
+            self.add_tile('road', (point[0], point[1]))
+
+        # for point in range(len(path_points) - 1):
+        #     while path_points[point][0] < path_points[point + 1][0]:
+        #         self.add_tile('road', (path_points[point][0], path_points[point][1]))
+        #         path_points[point][0] += 1
+        #     while path_points[point][1] < path_points[point + 1][1]:
+        #         self.add_tile('road', (path_points[point][0], path_points[point][1]))
+        #         path_points[point][1] += 1
+
+    def update(self, screen):
         for enemy in self.sprites():
             if enemy.__class__ != Tile:
                 grid_pos = (enemy.rect.x // TILE_SIZE, enemy.rect.y // TILE_SIZE)
-                if grid_pos != (int(self.finish[1]), int(self.finish[0])):
-                    if self.grid[grid_pos[0] + 1] and self.grid[grid_pos[1] + 1]:
-                        if self.grid[grid_pos[1]][grid_pos[0] + 1].type == 'road':
-                            enemy.move_right()
-                        elif self.grid[grid_pos[1] + 1][grid_pos[0]].type == 'road':
-                            enemy.move_down()
-                        elif self.grid[grid_pos[1]][grid_pos[0] - 1].type == 'road':
-                            enemy.move_left()
-                        elif self.grid[grid_pos[1] - 1][grid_pos[0]].type == 'road':
-                            enemy.move_up()
+                if grid_pos != (int(self.finish[0]), int(self.finish[1])):
+                    if grid_pos[1] + 1 and self.grid[grid_pos[1] + 1][grid_pos[0]].type == 'road':
+                        enemy.move_down()
+                    # elif grid_pos[0] - 1 and self.grid[grid_pos[1]][grid_pos[0] - 1].type == 'road':
+                    #     enemy.move_left()
+                    elif grid_pos[0] + 1 and self.grid[grid_pos[1]][grid_pos[0] + 1].type == 'road':
+                        enemy.move_right()
+                    elif grid_pos[1] - 1 and self.grid[grid_pos[1] - 1][grid_pos[0]].type == 'road':
+                        enemy.move_up()
                 else:
+                    print("атака")
                     enemy.attack(self.base)
+                    break
+
+        self.wave_text.draw(f"Волна: {wave}", (10, 600))
+        self.coin_text.draw(f"Деньги: {coins}", (10, 650))
 
     def add_enemy(self, *enemy):
         self.add(*enemy)
@@ -90,4 +101,4 @@ class Tile(pygame.sprite.Sprite):
 
 class Base:
     def __init__(self):
-        self.health = 100
+        self.health = 1
