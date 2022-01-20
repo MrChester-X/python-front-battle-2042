@@ -3,7 +3,8 @@ from src.units.unit_types import load_all_unit_types
 from src.enemies.enemy_types import load_all_enemy_types
 from src.enemies.enemy import Enemy
 from src.core.shop.shop import load_shop
-from src.core.globals.main_globals import json_maps, FPS, SCREEN_SIZE, screen, wave, sprites_loader, coins
+from src.core.globals.main_globals import json_maps, FPS, SCREEN_SIZE, screen, wave, sprites_loader, \
+    coins, SPAWNRATE
 from src.core.UI.ui_elements import Button, Text
 import pygame
 import sys
@@ -12,14 +13,20 @@ import sys
 class Main:
     def __init__(self):
         pygame.init()
+        pygame.display.set_caption("FrontBattle2042")
 
         self.clock = pygame.time.Clock()
         self.running = False
         self.pause = False
 
+        global wave, coins
+
         self.maps = json_maps.get_json()['maps']
         self.lvl_key = None
         self.difficulty = None
+
+        self.COUNTDOWN = pygame.USEREVENT + 1
+        self.SPAWN = pygame.USEREVENT + 2
 
         self.settings = json_maps.get_json()['maps']
 
@@ -89,6 +96,33 @@ class Main:
 
             self.clock.tick(FPS)
 
+    def win_screen(self):
+        menu = True
+        pygame.draw.rect(screen, pygame.Color(0, 0, 0),
+                         ((0, 0), (SCREEN_SIZE[0], SCREEN_SIZE[1])))
+
+        btns_x = (SCREEN_SIZE[0] // 2) - 400 // 2
+        btns_y = (SCREEN_SIZE[1] // 3) # - 100 // 2
+        heading_txt = Text(screen, (255, 255, 255))
+        exit_btn = Button(screen, (400, 100), 'Выйти в меню')
+
+        while menu:
+            events = pygame.event.get()
+            for event in events:
+                if event.type == pygame.QUIT:
+                    sys.exit()
+
+            heading_txt.draw('Победа!', (btns_x + 400 // 5, btns_y))
+            close_self = exit_btn.draw(btns_x, btns_y + 150, events=events)
+
+            if close_self:
+                self.main_menu()
+                menu = False
+
+            pygame.display.flip()
+
+            self.clock.tick(FPS)
+
     def select_difficulty(self):
         menu = True
         pygame.draw.rect(screen, pygame.Color(0, 0, 0),
@@ -138,13 +172,36 @@ class Main:
                     enemies.append(Enemy(enemy_type, (0, 0)))
             self.waves.append(enemies)
 
-        self.ADDENEMY = pygame.USEREVENT + 1
-        pygame.time.set_timer(self.ADDENEMY, 1000)
+        pygame.time.set_timer(self.SPAWN, 10)
+
+    def add_wave(self):
+        pygame.time.set_timer(self.SPAWN, SPAWNRATE)
+        pygame.time.set_timer(self.COUNTDOWN, 0)
+        if self.waves:
+            if len(self.waves[0]) > 0:
+                self.grid.add_enemy(self.waves[0].pop(0))
+                print('спавн')
+            else:
+                print('отсчет')
+                pygame.time.set_timer(self.SPAWN, 0)
+                pygame.time.set_timer(self.COUNTDOWN, 1000)
+                del self.waves[0]
+                coins += self.wave_reward
+        else:
+            self.win_screen()
+            print('ded')
+
+        return 10
 
     def run_level(self, difficulty):
         screen.fill((0, 0, 0))
         self.generate_waves(difficulty, self.maps[self.lvl_key])
+
+        pygame.time.set_timer(self.SPAWN, SPAWNRATE)
+
         wave = 1
+        counter = self.add_wave()
+
         while self.running:
             screen.fill((0, 0, 0))
 
@@ -155,16 +212,16 @@ class Main:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         self.pause = not self.pause
-                if event.type == self.ADDENEMY:
-                    if len(self.waves) > 0:
-                        if len(self.waves[0]) > 1:
-                            self.grid.add(self.waves[0].pop(0))
-                        elif len(self.waves[0]) == 1:
-                            self.grid.add(self.waves[0].pop(0))
-                            del self.waves[0]
+                if event.type == self.SPAWN:
+                    counter = self.add_wave()
+                if event.type == self.COUNTDOWN:
+                    counter -= 1
+                    if counter == 0:
+                        print('WAVE!')
+                        counter = self.add_wave()
+                        wave += 1
                     else:
-                        # self.running = False
-                        pass
+                        print(counter)
 
             if not self.pause:
                 self.grid.draw(screen)

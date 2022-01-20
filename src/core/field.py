@@ -179,9 +179,6 @@ class Grid(pygame.sprite.Group):
         self.add(Unit(unit.key, (pos[0] * TILE_SIZE, pos[1] * TILE_SIZE)))
         coins -= unit.cost
 
-    # def regenerate(self):
-    #     super().__init__()
-
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self, type, pos, sprites):

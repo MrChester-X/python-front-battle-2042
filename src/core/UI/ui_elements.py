@@ -3,7 +3,7 @@ import pygame
 
 
 class Text:
-    def __init__(self, screen, color, font_size=50, font=MAIN_FONT):
+    def __init__(self, screen, color, font_size=60, font=MAIN_FONT):
         pygame.font.init()
         self.screen = screen
         self.font = pygame.font.Font(font, font_size)
