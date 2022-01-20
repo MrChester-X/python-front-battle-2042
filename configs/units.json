@@ -5,7 +5,7 @@
             "name": "Стрелок",
 
             "place_settings": {
-                "sprite": "...",
+                "sprite": "shooter.png",
                 "cost": 10,
                 "radius_place": 5.0
             },
@@ -20,13 +20,28 @@
             "name": "Снайпер",
 
             "place_settings": {
-                "sprite": "...",
+                "sprite": "sniper.png",
                 "cost": 30,
                 "radius_place": 5.0
             },
             "skills": {
                 "radius": 100.0,
                 "damage": 20.0,
+                "reload": 1.0
+            }
+        },
+        {
+            "key": "magic",
+            "name": "Силач",
+
+            "place_settings": {
+                "sprite": "magic.png",
+                "cost": 100,
+                "radius_place": 5.0
+            },
+            "skills": {
+                "radius": 100.0,
+                "damage": 50.0,
                 "reload": 1.0
             }
         }

@@ -54,3 +54,26 @@ class Button:
             pygame.draw.rect(self.screen, self.unvisited_color, ((x, y), (self.width, self.height)))
 
         self.text.draw(self.message, (x + 10, y + 10))
+
+    def draw_shop(self, x, y, action=None, index=0, auto=False, events=[]):
+        mouse_pos = pygame.mouse.get_pos()
+        mouse = x <= mouse_pos[0] <= x + self.width and y <= mouse_pos[1] <= y + self.height
+
+        pressed = False
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pressed = True
+                break
+
+        if mouse or auto:
+            pygame.draw.rect(self.screen, self.visited_color,
+                             ((x, y), (self.width, self.height)), 1)
+            if pressed and mouse:
+                if action:
+                    action(index)
+                return True
+        else:
+            pygame.draw.rect(self.screen, self.unvisited_color,
+                             ((x, y), (self.width, self.height)))
+
+        self.text.draw(self.message, (x + 10, y + 10))

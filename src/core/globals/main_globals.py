@@ -20,6 +20,6 @@ unit_types = {}
 enemy_types = {}
 
 screen = pygame.display.set_mode(SCREEN_SIZE)
-coins = 0
+coins = 1000
 wave = 1
 shop = None

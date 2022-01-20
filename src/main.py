@@ -146,7 +146,8 @@ class Main:
         self.generate_waves(difficulty, self.maps[self.lvl_key])
         wave = 1
         while self.running:
-            for event in pygame.event.get():
+            events = pygame.event.get()
+            for event in events:
                 if event.type == pygame.QUIT:
                     self.running = False
                 if event.type == pygame.KEYDOWN:
@@ -165,7 +166,7 @@ class Main:
 
             if not self.pause:
                 self.grid.draw(screen)
-                self.grid.update(screen)
+                self.grid.update(screen, events)
 
             if self.grid.base.health <= 0:
                 self.main_menu()

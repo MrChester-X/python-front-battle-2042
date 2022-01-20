@@ -1,7 +1,10 @@
 from src.core.globals.main_globals import TILE_SIZE, SCREEN_SIZE, GRID_SIZE, sprites_loader
-from src.core.UI.ui_elements import Text
-from src.core.globals.main_globals import coins, screen as sc, wave
+from src.core.UI.ui_elements import Text, Button
+from src.core.globals.main_globals import coins, screen as sc, wave, unit_types
+from src.enemies.enemy import Enemy
 import pygame
+
+from src.units.unit import Unit
 
 
 class Grid(pygame.sprite.Group):
@@ -31,8 +34,13 @@ class Grid(pygame.sprite.Group):
 
         self.path_generator(lvl_settings['enemy_line']['line_points'])
 
-        self.wave_text = Text(sc, (255, 255, 255))
-        self.coin_text = Text(sc, (255, 255, 255))
+        self.wave_text = Text(sc, (255, 255, 255), font_size=30)
+        self.coin_text = Text(sc, (255, 255, 255), font_size=30)
+
+        self.units_buy = []
+        self.unit_choosen = 1
+        for key, value in unit_types.items():
+            self.units_buy.append([key, Button(sc, (350, 70), f"{value.name} ({value.cost}$)", font_size=40)])
 
     def path_generator(self, path_points):
         path_points = [[int(i[0]), int(i[1])] for i in path_points]
@@ -48,9 +56,9 @@ class Grid(pygame.sprite.Group):
         #         self.add_tile('road', (path_points[point][0], path_points[point][1]))
         #         path_points[point][1] += 1
 
-    def update(self, screen):
+    def update(self, screen, events):
         for enemy in self.sprites():
-            if enemy.__class__ != Tile:
+            if enemy.__class__ == Enemy:
                 grid_pos = (enemy.rect.x // TILE_SIZE, enemy.rect.y // TILE_SIZE)
                 if grid_pos != (int(self.finish[0]), int(self.finish[1])):
                     if grid_pos[1] + 1 and self.grid[grid_pos[1] + 1][grid_pos[0]].type == 'road':
@@ -67,7 +75,50 @@ class Grid(pygame.sprite.Group):
                     break
 
         self.wave_text.draw(f"Волна: {wave}", (10, 600))
-        self.coin_text.draw(f"Деньги: {coins}", (10, 650))
+        self.coin_text.draw(f"Деньги: {coins}", (10, 640))
+
+        x, y, c = 300, 600, 0
+        for i, unit in enumerate(self.units_buy):
+            unit[1].draw_shop(x, y, events=events, auto=(self.unit_choosen == i), index=i, action=self.choose_unit)
+
+            c += 1
+            if c <= 1:
+                y += 70
+            else:
+                y -= 70
+                x += 350
+
+        self.check_buy(events)
+
+    def choose_unit(self, index):
+        if self.unit_choosen == index:
+            self.unit_choosen = -1
+        else:
+            self.unit_choosen = index
+
+    def check_buy(self, events):
+        if self.unit_choosen == -1:
+            return
+
+        pressed = False
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pressed = True
+                break
+
+        if not pressed:
+            return
+
+        mouse_pos = pygame.mouse.get_pos()
+        grid_pos = (mouse_pos[0] // TILE_SIZE, mouse_pos[1] // TILE_SIZE)
+        if grid_pos[0] >= GRID_SIZE[0] or grid_pos[1] >= GRID_SIZE[1]:
+            return
+
+        unit = unit_types[self.units_buy[self.unit_choosen][0]]
+        if coins < unit.cost:
+            pass
+
+        self.add(Unit(unit.key, (grid_pos[0] * TILE_SIZE, grid_pos[1] * TILE_SIZE)))
 
     def add_enemy(self, *enemy):
         self.add(*enemy)
