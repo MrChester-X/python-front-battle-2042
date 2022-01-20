@@ -146,6 +146,8 @@ class Main:
         self.generate_waves(difficulty, self.maps[self.lvl_key])
         wave = 1
         while self.running:
+            screen.fill((0, 0, 0))
+
             events = pygame.event.get()
             for event in events:
                 if event.type == pygame.QUIT:

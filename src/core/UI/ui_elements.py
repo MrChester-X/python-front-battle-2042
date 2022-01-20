@@ -1,4 +1,4 @@
-from src.core.globals.main_globals import MAIN_FONT
+from src.core.globals.main_globals import MAIN_FONT, screen
 import pygame
 
 

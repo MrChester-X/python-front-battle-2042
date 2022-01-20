@@ -1,3 +1,5 @@
+from math import sqrt
+
 from src.core.globals.main_globals import TILE_SIZE, SCREEN_SIZE, GRID_SIZE, sprites_loader
 from src.core.UI.ui_elements import Text, Button
 from src.core.globals.main_globals import coins, screen as sc, wave, unit_types
@@ -36,6 +38,7 @@ class Grid(pygame.sprite.Group):
 
         self.wave_text = Text(sc, (255, 255, 255), font_size=30)
         self.coin_text = Text(sc, (255, 255, 255), font_size=30)
+        self.enemy_text = Text(sc, (255, 255, 255), font_size=30)
 
         self.units_buy = []
         self.unit_choosen = 1
@@ -57,21 +60,46 @@ class Grid(pygame.sprite.Group):
         #         path_points[point][1] += 1
 
     def update(self, screen, events):
-        for enemy in self.sprites():
-            if enemy.__class__ == Enemy:
-                grid_pos = (enemy.rect.x // TILE_SIZE, enemy.rect.y // TILE_SIZE)
+        flag = False
+        for model in self.sprites():
+            grid_pos = (model.rect.x // TILE_SIZE, model.rect.y // TILE_SIZE)
+            if model.__class__ == Enemy:
+                mouse_pos = pygame.mouse.get_pos()
+                enemy_pos = (model.rect.x + TILE_SIZE // 2, model.rect.y + TILE_SIZE // 2)
+                distance = sqrt((mouse_pos[0] - enemy_pos[0]) ** 2 + (mouse_pos[1] - enemy_pos[1]) ** 2)
+                if distance <= TILE_SIZE and not flag:
+                    self.enemy_text.draw(f"{round(model.health, 1)}/{round(model.max_health, 1)}", (950, 750))
+                    flag = True
+
                 if grid_pos != (int(self.finish[0]), int(self.finish[1])):
                     if grid_pos[1] + 1 and self.grid[grid_pos[1] + 1][grid_pos[0]].type == 'road':
-                        enemy.move_down()
+                        model.move_down()
                     # elif grid_pos[0] - 1 and self.grid[grid_pos[1]][grid_pos[0] - 1].type == 'road':
                     #     enemy.move_left()
                     elif grid_pos[0] + 1 and self.grid[grid_pos[1]][grid_pos[0] + 1].type == 'road':
-                        enemy.move_right()
+                        model.move_right()
                     elif grid_pos[1] - 1 and self.grid[grid_pos[1] - 1][grid_pos[0]].type == 'road':
-                        enemy.move_up()
+                        model.move_up()
                 else:
                     print("атака")
-                    enemy.attack(self.base)
+                    model.attack(self.base)
+                    break
+            elif model.__class__ == Unit:
+                unit_pos = (model.pos[0] + TILE_SIZE // 2, model.pos[1] + TILE_SIZE // 2)
+                radius = unit_types[model.type].radius * TILE_SIZE
+                pygame.draw.circle(screen, (0, 0, 0), unit_pos, radius, 2)
+                for enemy in self.sprites():
+                    if enemy.__class__ != Enemy:
+                        continue
+
+                    enemy_pos = (enemy.rect.x + TILE_SIZE // 2, enemy.rect.y + TILE_SIZE // 2)
+                    distance = sqrt((unit_pos[0] - enemy_pos[0]) ** 2 + (unit_pos[1] - enemy_pos[1]) ** 2)
+                    if distance > radius:
+                        continue
+
+                    enemy.health -= unit_types[model.type].damage
+                    if enemy.health < 0:
+                        enemy.remove(self)
                     break
 
         self.wave_text.draw(f"Волна: {wave}", (10, 600))
@@ -97,6 +125,8 @@ class Grid(pygame.sprite.Group):
             self.unit_choosen = index
 
     def check_buy(self, events):
+        global coins
+
         if self.unit_choosen == -1:
             return
 
@@ -114,11 +144,28 @@ class Grid(pygame.sprite.Group):
         if grid_pos[0] >= GRID_SIZE[0] or grid_pos[1] >= GRID_SIZE[1]:
             return
 
+        print(self.grid[grid_pos[1]][grid_pos[0]].type)
+
+        if self.grid[grid_pos[1]][grid_pos[0]].type != "terrain":
+            return
+
+        # Код высшего уровня
+
+        not_good_code = self.sprites()
+        for good_code in not_good_code:
+            if good_code.__class__ == Unit:
+                if good_code.rect.x // TILE_SIZE == grid_pos[0]:
+                    if good_code.rect.y // TILE_SIZE == grid_pos[1]:
+                        if True:
+                            if not False:
+                                good_code.remove(self)
+
         unit = unit_types[self.units_buy[self.unit_choosen][0]]
         if coins < unit.cost:
-            pass
+            return
 
-        self.add(Unit(unit.key, (grid_pos[0] * TILE_SIZE, grid_pos[1] * TILE_SIZE)))
+        self.add_unit(unit, grid_pos)
+
 
     def add_enemy(self, *enemy):
         self.add(*enemy)
@@ -128,7 +175,9 @@ class Grid(pygame.sprite.Group):
         self.add(tile_sprite)
 
     def add_unit(self, unit, pos):
-        pass
+        global coins
+        self.add(Unit(unit.key, (pos[0] * TILE_SIZE, pos[1] * TILE_SIZE)))
+        coins -= unit.cost
 
     # def regenerate(self):
     #     super().__init__()

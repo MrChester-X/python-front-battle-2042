@@ -18,12 +18,12 @@
             "name": "Быстрый зомби",
 
             "place_settings": {
-                "sprite": "enemy_placeholder.png",
+                "sprite": "speed.png",
                 "radius_place": 1.0
             },
             "skills": {
                 "health": 10.0,
-                "speed": 10.0
+                "speed": 6.0
             }
         },
         {

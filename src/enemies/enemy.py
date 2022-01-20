@@ -12,6 +12,7 @@ class Enemy(pygame.sprite.Sprite):
 
         self.load_health()
         self.load_sprite(pos)
+        self.pos = pos
 
         self.speed = enemy_types[self.type].speed
 
