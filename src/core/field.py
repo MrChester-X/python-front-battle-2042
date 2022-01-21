@@ -2,7 +2,7 @@ from math import sqrt
 
 from src.core.globals.main_globals import TILE_SIZE, SCREEN_SIZE, GRID_SIZE, sprites_loader
 from src.core.UI.ui_elements import Text, Button
-from src.core.globals.main_globals import coins, screen as sc, wave, unit_types
+from src.core.globals.main_globals import wave, coins, screen as sc, unit_types
 from src.enemies.enemy import Enemy
 import pygame
 
@@ -60,6 +60,9 @@ class Grid(pygame.sprite.Group):
         #         path_points[point][1] += 1
 
     def update(self, screen, events):
+        global coins
+        global wave
+
         flag = False
         for model in self.sprites():
             grid_pos = (model.rect.x // TILE_SIZE, model.rect.y // TILE_SIZE)
@@ -98,6 +101,8 @@ class Grid(pygame.sprite.Group):
                         continue
 
                     enemy.health -= unit_types[model.type].damage
+                    if int(enemy.health + unit_types[model.type].damage) > int(enemy.health):
+                        coins += 1
                     if enemy.health < 0:
                         enemy.remove(self)
                     break
@@ -149,6 +154,10 @@ class Grid(pygame.sprite.Group):
         if self.grid[grid_pos[1]][grid_pos[0]].type != "terrain":
             return
 
+        unit = unit_types[self.units_buy[self.unit_choosen][0]]
+        if coins < unit.cost:
+            return
+
         # Код высшего уровня
 
         not_good_code = self.sprites()
@@ -160,12 +169,7 @@ class Grid(pygame.sprite.Group):
                             if not False:
                                 good_code.remove(self)
 
-        unit = unit_types[self.units_buy[self.unit_choosen][0]]
-        if coins < unit.cost:
-            return
-
         self.add_unit(unit, grid_pos)
-
 
     def add_enemy(self, *enemy):
         self.add(*enemy)
@@ -199,3 +203,17 @@ class Tile(pygame.sprite.Sprite):
 class Base:
     def __init__(self):
         self.health = 1
+
+
+def set_wave(count):
+    global wave
+    wave = count
+
+
+def get_wave():
+    return wave
+
+
+def set_coins(count):
+    global coins
+    coins = count

@@ -1,10 +1,10 @@
-from src.core.field import Grid
+from src.core.globals.main_globals import json_maps, FPS, SCREEN_SIZE, screen, sprites_loader, \
+    coins, SPAWNRATE
+from src.core.field import Grid, set_wave, get_wave, set_coins
 from src.units.unit_types import load_all_unit_types
 from src.enemies.enemy_types import load_all_enemy_types
 from src.enemies.enemy import Enemy
 from src.core.shop.shop import load_shop
-from src.core.globals.main_globals import json_maps, FPS, SCREEN_SIZE, screen, wave, sprites_loader, \
-    coins, SPAWNRATE
 from src.core.UI.ui_elements import Button, Text
 import pygame
 import sys
@@ -18,8 +18,6 @@ class Main:
         self.clock = pygame.time.Clock()
         self.running = False
         self.pause = False
-
-        global coins
 
         self.maps = json_maps.get_json()['maps']
         self.lvl_key = None
@@ -165,6 +163,7 @@ class Main:
     def generate_waves(self, difficulty, lvl):
         settings = lvl['difficulties'][difficulty]
         self.wave_reward = settings['prize']
+        self.waves = []
         for waves in settings['waves']:
             enemies = []
             for enemy_type in waves:
@@ -196,12 +195,15 @@ class Main:
         return 10
 
     def run_level(self, difficulty):
+        global wave
+
         screen.fill((0, 0, 0))
         self.generate_waves(difficulty, self.maps[self.lvl_key])
 
         pygame.time.set_timer(self.SPAWN, SPAWNRATE)
 
-        wave = 1
+        set_wave(1)
+        set_coins(70)
         counter = self.add_wave()
 
         while self.running:
@@ -221,7 +223,7 @@ class Main:
                     if counter == 0:
                         print('WAVE!')
                         counter = self.add_wave()
-                        wave += 1
+                        set_wave(get_wave() + 1)
                     else:
                         print(counter)
 

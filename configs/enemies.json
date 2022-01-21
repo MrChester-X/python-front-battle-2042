@@ -27,17 +27,29 @@
             }
         },
         {
-            "key": "freeze_zombie",
-            "name": "Замораживающий зомби",
+            "key": "mega_zombie",
+            "name": "Хороший зомби",
 
             "place_settings": {
-                "sprite": "enemy_placeholder.png",
+                "sprite": "amogus.png",
                 "radius_place": 3.0
             },
             "skills": {
-                "health": 40.0,
-                "speed": 1.0,
-                "freeze_radius": 10.0 
+                "health": 100.0,
+                "speed": 1.0
+            }
+        },
+        {
+            "key": "fast_death",
+            "name": "Конец игры =)",
+
+            "place_settings": {
+                "sprite": "death.png",
+                "radius_place": 3.0
+            },
+            "skills": {
+                "health": 500.0,
+                "speed": 1.0
             }
         }
     ]
