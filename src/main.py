@@ -1,9 +1,10 @@
-from src.core.field import Grid
+from src.core.globals.main_globals import json_maps, FPS, SCREEN_SIZE, screen, sprites_loader, \
+    coins, SPAWNRATE
+from src.core.field import Grid, set_wave, get_wave, set_coins
 from src.units.unit_types import load_all_unit_types
 from src.enemies.enemy_types import load_all_enemy_types
 from src.enemies.enemy import Enemy
 from src.core.shop.shop import load_shop
-from src.core.globals.main_globals import json_maps, FPS, SCREEN_SIZE, sprites_loader, coins
 from src.core.UI.ui_elements import Button, Text
 import pygame
 import sys
@@ -12,8 +13,7 @@ import sys
 class Main:
     def __init__(self):
         pygame.init()
-
-        self.screen = pygame.display.set_mode(SCREEN_SIZE)
+        pygame.display.set_caption("FrontBattle2042")
 
         self.clock = pygame.time.Clock()
         self.running = False
@@ -22,6 +22,9 @@ class Main:
         self.maps = json_maps.get_json()['maps']
         self.lvl_key = None
         self.difficulty = None
+
+        self.COUNTDOWN = pygame.USEREVENT + 1
+        self.SPAWN = pygame.USEREVENT + 2
 
         self.settings = json_maps.get_json()['maps']
 
@@ -37,21 +40,22 @@ class Main:
 
     def main_menu(self):
         menu = True
-        pygame.draw.rect(self.screen, pygame.Color(0, 0, 0),
+        pygame.draw.rect(screen, pygame.Color(0, 0, 0),
                          ((0, 0), (SCREEN_SIZE[0], SCREEN_SIZE[1])))
 
         btns_x = (SCREEN_SIZE[0] // 10)
         btns_y = (SCREEN_SIZE[1] // 2) - 100 // 2
-        start_btn = Button(self.screen, (350, 100), 'Начать игру')
-        exit_btn = Button(self.screen, (350, 100), 'Выйти')
+        start_btn = Button(screen, (350, 100), 'Начать игру')
+        exit_btn = Button(screen, (350, 100), 'Выйти')
 
         while menu:
-            for event in pygame.event.get():
+            events = pygame.event.get()
+            for event in events:
                 if event.type == pygame.QUIT:
                     sys.exit()
 
-            close_self = start_btn.draw(btns_x, btns_y - 50)
-            exit_btn.draw(btns_x, btns_y + 50, sys.exit)
+            close_self = start_btn.draw(btns_x, btns_y - 50, events=events)
+            exit_btn.draw(btns_x, btns_y + 50, sys.exit, events=events)
 
             if close_self:
                 self.select_level()
@@ -63,22 +67,23 @@ class Main:
 
     def select_level(self):
         menu = True
-        pygame.draw.rect(self.screen, pygame.Color(0, 0, 0),
+        pygame.draw.rect(screen, pygame.Color(0, 0, 0),
                          ((0, 0), (SCREEN_SIZE[0], SCREEN_SIZE[1])))
 
         btns_x = (SCREEN_SIZE[0] // 2) - 800 // 2
         btns_y = (SCREEN_SIZE[1] // 6)
 
-        lvl1 = Button(self.screen, (800, 200),
+        lvl1 = Button(screen, (800, 200),
                       f"{self.maps[0]['name']} - {self.maps[0]['description']}", 35)
         # lvl1_image = sprites_loader.load_image()
 
         while menu:
-            for event in pygame.event.get():
+            events = pygame.event.get()
+            for event in events:
                 if event.type == pygame.QUIT:
                     sys.exit()
 
-            btn0 = lvl1.draw(btns_x, btns_y)
+            btn0 = lvl1.draw(btns_x, btns_y, events=events)
 
             if btn0:
                 self.lvl_key = 0
@@ -89,26 +94,54 @@ class Main:
 
             self.clock.tick(FPS)
 
-    def select_difficulty(self):
+    def win_screen(self):
         menu = True
-        pygame.draw.rect(self.screen, pygame.Color(0, 0, 0),
+        pygame.draw.rect(screen, pygame.Color(0, 0, 0),
                          ((0, 0), (SCREEN_SIZE[0], SCREEN_SIZE[1])))
 
-        easy_btn = Button(self.screen, (200, 100), 'Easy')
-        normal_btn = Button(self.screen, (200, 100), 'Normal')
-        hard_btn = Button(self.screen, (200, 100), 'Hard')
+        btns_x = (SCREEN_SIZE[0] // 2) - 400 // 2
+        btns_y = (SCREEN_SIZE[1] // 3)  # - 100 // 2
+        heading_txt = Text(screen, (255, 255, 255))
+        exit_btn = Button(screen, (400, 100), 'Выйти в меню')
+
+        while menu:
+            events = pygame.event.get()
+            for event in events:
+                if event.type == pygame.QUIT:
+                    sys.exit()
+
+            heading_txt.draw('Победа!', (btns_x + 400 // 5, btns_y))
+            close_self = exit_btn.draw(btns_x, btns_y + 150, events=events)
+
+            if close_self:
+                self.main_menu()
+                menu = False
+
+            pygame.display.flip()
+
+            self.clock.tick(FPS)
+
+    def select_difficulty(self):
+        menu = True
+        pygame.draw.rect(screen, pygame.Color(0, 0, 0),
+                         ((0, 0), (SCREEN_SIZE[0], SCREEN_SIZE[1])))
+
+        easy_btn = Button(screen, (200, 100), 'Easy')
+        normal_btn = Button(screen, (200, 100), 'Normal')
+        hard_btn = Button(screen, (200, 100), 'Hard')
 
         btns_x = (SCREEN_SIZE[0] // 2) - 800 // 2
         btns_y = (SCREEN_SIZE[1] // 2) - 100 // 2
 
         while menu:
-            for event in pygame.event.get():
+            events = pygame.event.get()
+            for event in events:
                 if event.type == pygame.QUIT:
                     sys.exit()
 
-            easy = easy_btn.draw(btns_x, btns_y - 100)
-            normal = normal_btn.draw(btns_x, btns_y)
-            hard = hard_btn.draw(btns_x, btns_y + 100)
+            easy = easy_btn.draw(btns_x, btns_y - 100, events=events)
+            normal = normal_btn.draw(btns_x, btns_y, events=events)
+            hard = hard_btn.draw(btns_x, btns_y + 100, events=events)
 
             if easy:
                 res = 'easy'
@@ -130,39 +163,73 @@ class Main:
     def generate_waves(self, difficulty, lvl):
         settings = lvl['difficulties'][difficulty]
         self.wave_reward = settings['prize']
-        for wave in settings['waves']:
+        self.waves = []
+        for waves in settings['waves']:
             enemies = []
-            for enemy_type in wave:
-                for enemy in range(wave[enemy_type]):
+            for enemy_type in waves:
+                for enemy in range(waves[enemy_type]):
                     enemies.append(Enemy(enemy_type, (0, 0)))
             self.waves.append(enemies)
 
-        self.ADDENEMY = pygame.USEREVENT + 1
-        pygame.time.set_timer(self.ADDENEMY, 1000)
+        pygame.time.set_timer(self.SPAWN, 10)
+
+    def add_wave(self):
+        global coins
+
+        pygame.time.set_timer(self.SPAWN, SPAWNRATE)
+        pygame.time.set_timer(self.COUNTDOWN, 0)
+        if self.waves:
+            if len(self.waves[0]) > 0:
+                self.grid.add_enemy(self.waves[0].pop(0))
+                print('спавн')
+            else:
+                print('отсчет')
+                pygame.time.set_timer(self.SPAWN, 0)
+                pygame.time.set_timer(self.COUNTDOWN, 1000)
+                del self.waves[0]
+                coins += self.wave_reward
+        else:
+            self.win_screen()
+            print('ded')
+
+        return 10
 
     def run_level(self, difficulty):
-        self.screen.fill((0, 0, 0))
+        global wave
+
+        screen.fill((0, 0, 0))
         self.generate_waves(difficulty, self.maps[self.lvl_key])
+
+        pygame.time.set_timer(self.SPAWN, SPAWNRATE)
+
+        set_wave(1)
+        set_coins(70)
+        counter = self.add_wave()
+
         while self.running:
-            for event in pygame.event.get():
+            screen.fill((0, 0, 0))
+
+            events = pygame.event.get()
+            for event in events:
                 if event.type == pygame.QUIT:
                     self.running = False
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         self.pause = not self.pause
-                if event.type == self.ADDENEMY:
-                    if len(self.waves) > 0:
-                        if len(self.waves[0]) > 1:
-                            self.grid.add(self.waves[0].pop(0))
-                        elif len(self.waves[0]) == 1:
-                            self.grid.add(self.waves[0].pop(0))
-                            del self.waves[0]
+                if event.type == self.SPAWN:
+                    counter = self.add_wave()
+                if event.type == self.COUNTDOWN:
+                    counter -= 1
+                    if counter == 0:
+                        print('WAVE!')
+                        counter = self.add_wave()
+                        set_wave(get_wave() + 1)
                     else:
-                        self.running = False
+                        print(counter)
 
             if not self.pause:
-                self.grid.draw(self.screen)
-                self.grid.update()
+                self.grid.draw(screen)
+                self.grid.update(screen, events)
 
             if self.grid.base.health <= 0:
                 self.main_menu()

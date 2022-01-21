@@ -31,7 +31,7 @@ class EnemyType:
         skills = data["skills"]
 
         self.health = skills.get("health")
-        self.speed = int(skills.get("speed")) / 2
+        self.speed = int(skills.get("speed"))
 
 
 def load_all_enemy_types():

@@ -1,9 +1,9 @@
-from src.core.globals.main_globals import MAIN_FONT
+from src.core.globals.main_globals import MAIN_FONT, screen
 import pygame
 
 
 class Text:
-    def __init__(self, screen, color, font_size=50, font=MAIN_FONT):
+    def __init__(self, screen, color, font_size=60, font=MAIN_FONT):
         pygame.font.init()
         self.screen = screen
         self.font = pygame.font.Font(font, font_size)
@@ -30,15 +30,20 @@ class Button:
 
         self.text = Text(screen, self.text_color, font_size)
 
-    def draw(self, x, y, action=None, active=True):
+    def draw(self, x, y, action=None, active=True, events=[]):
         mouse_pos = pygame.mouse.get_pos()
-        pressed = pygame.mouse.get_pressed()
+
+        pressed = False
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pressed = True
+                break
 
         if active:
             if x <= mouse_pos[0] <= x + self.width and y <= mouse_pos[1] <= y + self.height:
                 pygame.draw.rect(self.screen, self.visited_color,
                                  ((x, y), (self.width, self.height)), 1)
-                if pressed[0]:
+                if pressed:
                     if action:
                         action()
                     return True
@@ -47,5 +52,28 @@ class Button:
                                  ((x, y), (self.width, self.height)))
         else:
             pygame.draw.rect(self.screen, self.unvisited_color, ((x, y), (self.width, self.height)))
+
+        self.text.draw(self.message, (x + 10, y + 10))
+
+    def draw_shop(self, x, y, action=None, index=0, auto=False, events=[]):
+        mouse_pos = pygame.mouse.get_pos()
+        mouse = x <= mouse_pos[0] <= x + self.width and y <= mouse_pos[1] <= y + self.height
+
+        pressed = False
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pressed = True
+                break
+
+        if mouse or auto:
+            pygame.draw.rect(self.screen, self.visited_color,
+                             ((x, y), (self.width, self.height)), 1)
+            if pressed and mouse:
+                if action:
+                    action(index)
+                return True
+        else:
+            pygame.draw.rect(self.screen, self.unvisited_color,
+                             ((x, y), (self.width, self.height)))
 
         self.text.draw(self.message, (x + 10, y + 10))

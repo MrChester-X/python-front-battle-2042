@@ -16,16 +16,30 @@
                 "line_radius": 2.0,
                 "line_points": [
                     [0.0, 0.0],
+                    [1.0, 0.0],
                     [1.0, 1.0],
-                    [1.0, 3.0],
+                    [1.0, 2.0],
+                    [2.0, 2.0],
+                    [3.0, 2.0],
                     [3.0, 3.0],
-                    [3.0, 5.0]
+                    [4.0, 3.0],
+                    [5.0, 3.0],
+                    [6.0, 3.0],
+                    [6.0, 4.0],
+                    [7.0, 4.0],
+                    [8.0, 4.0],
+                    [9.0, 4.0],
+                    [10.0, 4.0],
+                    [11.0, 4.0]
                 ]
             },
             "difficulties": {
                 "easy": {
                     "prize": 100,
                     "waves": [
+                        {
+                            "zombie": 1
+                        },
                         {
                             "zombie": 2
                         },
@@ -35,6 +49,11 @@
                         {
                             "zombie": 6,
                             "fast_zombie": 1
+                        },
+                        {
+                            "mega_zombie": 1,
+                            "zombie": 5,
+                            "fast_zombie": 1
                         }
                     ]
                 },
@@ -42,15 +61,35 @@
                     "prize": 200,
                     "waves": [
                         {
+                            "zombie": 2
+                        },
+                        {
                             "zombie": 3
                         },
                         {
-                            "zombie": 5,
-                            "fast_zombie": 1
+                            "zombie": 5
                         },
                         {
                             "zombie": 8,
+                            "fast_zombie": 1
+                        },
+                        {
+                            "mega_zombie": 1,
+                            "zombie": 5,
                             "fast_zombie": 2
+                        },
+                        {
+                            "mega_zombie": 2,
+                            "zombie": 10,
+                            "fast_zombie": 2
+                        },
+                        {
+                            "mega_zombie": 5,
+                            "fast_zombie": 5
+                        },
+                        {
+                            "mega_zombie": 10,
+                            "fast_zombie": 5
                         }
                     ]
                 },
@@ -58,16 +97,50 @@
                     "prize": 300,
                     "waves": [
                         {
-                            "zombie": 4
+                            "zombie": 2
                         },
                         {
-                            "zombie": 7,
+                            "zombie": 3
+                        },
+                        {
+                            "zombie": 6
+                        },
+                        {
+                            "zombie": 9,
+                            "fast_zombie": 1
+                        },
+                        {
+                            "mega_zombie": 2,
+                            "zombie": 6,
                             "fast_zombie": 2
                         },
                         {
+                            "mega_zombie": 3,
                             "zombie": 10,
-                            "fast_zombie": 3,
-                            "freeze_zombie": 1
+                            "fast_zombie": 3
+                        },
+                        {
+                            "mega_zombie": 5,
+                            "fast_zombie": 5,
+                            "fast_death": 1
+                        },
+                        {
+                            "mega_zombie": 10,
+                            "fast_death": 3,
+                            "fast_zombie": 5
+                        },
+                        {
+                            "fast_death": 10,
+                            "fast_zombie": 2
+                        },
+                        {
+                            "fast_death": 15
+                        },
+                        {
+                            "fast_death": 20
+                        },
+                        {
+                            "fast_death": 100
                         }
                     ]
                 }
